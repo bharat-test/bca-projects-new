@@ -88,4 +88,14 @@ console.log("lol  "+ result.data.request_id)
 let reqid=result.data.request_id;
 res.render('data',{"reqid":reqid})
 })
+
+
+router.get('/admin',(req,res)=>{
+    res.render('admin',{admin:true})
+})
+router.post('/adminpanel',(req,res)=>{
+    if(req.body.username=='admin' && req.body.password=='password'){
+        res.render('adminpanel',{loans:loans,applications:applications})
+    }
+})
 module.exports = router;
