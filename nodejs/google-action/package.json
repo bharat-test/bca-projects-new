@@ -1,0 +1,24 @@
+{
+  "name": "google-action",
+  "version": "1.0.0",
+  "description": "created by bh@r@t",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "google",
+    "action",
+    "intergration"
+  ],
+  "author": "bharat pandiya",
+  "license": "ISC",
+  "dependencies": {
+    "actions-on-google": "^3.0.0",
+    "axios": "^0.27.2",
+    "body-parse": "^0.1.0",
+    "dialogflow-fulfillment": "^0.6.1",
+    "express": "^4.18.1",
+    "mongodb": "^4.10.0"
+  }
+}

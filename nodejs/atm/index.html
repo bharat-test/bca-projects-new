@@ -1,0 +1,186 @@
+<!doctype html>
+
+<head>
+    <style>
+    /* CSS comes here */
+    #video {
+        border: 1px solid black;
+        width: 320px;
+        height: 240px;
+    }
+
+    #photo {
+        border: 1px solid black;
+        width: 320px;
+        height: 240px;
+    }
+
+    #canvas {
+        display: none;
+    }
+
+    .camera {
+        width: 340px;
+        display: inline-block;
+    }
+
+    .output {
+        width: 340px;
+        display: inline-block;
+    }
+
+    #startbutton {
+        display: block;
+        position: relative;
+        margin-left: auto;
+        margin-right: auto;
+        bottom: 36px;
+        padding: 5px;
+        background-color: #6a67ce;
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        font-size: 14px;
+        color: rgba(255, 255, 255, 1.0);
+        cursor: pointer;
+    }
+
+    .contentarea {
+        font-size: 16px;
+        font-family: Arial;
+        text-align: center;
+    }
+    </style>
+    <title>lol</title>
+</head>
+
+<body>
+    <div class="contentarea">
+        <h1>
+            get know who is , dont worry your privacy at first place
+        </h1>
+        <div class="camera">
+            <video id="video">Video stream not available.</video>
+        </div>
+        <div><button id="startbutton">verifya</button></div>
+        <canvas id="canvas"></canvas>
+        <div class="output">
+           <!-- <img id="photo" alt="The screen capture will appear in this box.">-->
+        </div>
+    </div>
+
+    <script>
+    /* JS comes here */
+    (function() {
+
+        var width = 320; // We will scale the photo width to this
+        var height = 0; // This will be computed based on the input stream
+
+        var streaming = false;
+
+        var video = null;
+        var canvas = null;
+        var photo = null;
+        var startbutton = null;
+
+        function startup() {
+            video = document.getElementById('video');
+            canvas = document.getElementById('canvas');
+            photo = document.getElementById('photo');
+            startbutton = document.getElementById('startbutton');
+
+            navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: false
+                })
+                .then(function(stream) {
+                    video.srcObject = stream;
+                    video.play();
+                })
+                .catch(function(err) {
+                    console.log("An error occurred: " + err);
+                });
+
+            video.addEventListener('canplay', function(ev) {
+                if (!streaming) {
+                    height = video.videoHeight / (video.videoWidth / width);
+
+                    if (isNaN(height)) {
+                        height = width / (4 / 3);
+                    }
+
+                    video.setAttribute('width', width);
+                    video.setAttribute('height', height);
+                    canvas.setAttribute('width', width);
+                    canvas.setAttribute('height', height);
+                    streaming = true;
+                }
+            }, false);
+
+            startbutton.addEventListener('click', function(ev) {
+                takepicture();
+                ev.preventDefault();
+            }, false);
+
+            clearphoto();
+        }
+
+
+        function clearphoto() {
+            var context = canvas.getContext('2d');
+            context.fillStyle = "#AAA";
+            context.fillRect(0, 0, canvas.width, canvas.height);
+
+            var data = canvas.toDataURL('image/png');
+            
+            photo.setAttribute('src', data);
+        }
+
+      async  function takepicture() {
+            var context = canvas.getContext('2d');
+            if (width && height) {
+                canvas.width = width;
+                canvas.height = height;
+                context.drawImage(video, 0, 0, width, height);
+
+                var data = canvas.toDataURL('image/png').split(';base64,')[1];
+                document.getElementById('startbutton').style.visibility = 'hidden';
+                const base64 = data;
+               // console.log(base64)
+                var user= {
+            "faceImage": base64            
+        }
+                // now calling api
+                const options = {
+	method: 'POST',
+	headers: {
+		'content-type': 'application/json',
+		'Api-key': 'key_7d6045ecc4294e00afa4ed1443dfb2e7vh3nbppw4h',
+		'X-RapidAPI-Key': 'd5c26a9c58msheeccff4b50aa158p177173jsne01e7083e58b',
+		'X-RapidAPI-Host': 'auther-check.p.rapidapi.com'
+	},
+	body: JSON.stringify(user)
+};
+
+var result = await fetch('https://auther-check.p.rapidapi.com/person/recognize-face', options)
+var status=result.status;
+
+ result= await result.json()
+ 
+ 
+ if(status==200){
+   // result = await JSON.parse(result);
+    console.log(result)
+    console.log(result.personId)}
+ else{ console.log("face not match with any customer in our database")
+	}
+  
+            } else {
+                clearphoto();
+            }
+        }
+
+        window.addEventListener('load', startup, false);
+    })();
+    </script>
+</body>
+
+</html>
